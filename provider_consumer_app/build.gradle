@@ -1,0 +1,51 @@
+plugins {
+	id 'org.springframework.boot' version '2.2.6.BUILD-SNAPSHOT'
+	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+	id "au.com.dius.pact" version "4.0.0"
+	id 'java'
+}
+
+group = 'com.example.labs.pact'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+repositories {
+	mavenCentral()
+	maven { url 'https://repo.spring.io/milestone' }
+	maven { url 'https://repo.spring.io/snapshot' }
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
+	compileOnly 'org.projectlombok:lombok:1.18.12'
+	annotationProcessor 'org.projectlombok:lombok:1.18.12'
+
+	testCompileOnly 'org.projectlombok:lombok:1.18.12'
+	testAnnotationProcessor 'org.projectlombok:lombok:1.18.12'
+	implementation 'com.squareup.retrofit2:converter-gson:2.7.2'
+	implementation 'com.squareup.retrofit2:retrofit:2.7.2'
+
+	testCompile 'au.com.dius:pact-jvm-consumer-junit5:4.0.0'
+}
+
+test {
+	useJUnitPlatform()
+}
+
+pact {
+	serviceProviders {
+		PVRService {
+			protocol = 'http'
+			host = 'localhost'
+			port = 8080
+			path = '/'
+		}
+	}
+
+	publish {
+		pactBrokerUrl = 'http://localhost:9292'
+	}
+}
