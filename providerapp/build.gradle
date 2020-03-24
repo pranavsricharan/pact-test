@@ -1,0 +1,52 @@
+plugins {
+	id 'org.springframework.boot' version '2.2.6.BUILD-SNAPSHOT'
+	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+	id "au.com.dius.pact" version "4.0.0"
+	id 'java'
+}
+
+group = 'com.example.labs.pact'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+repositories {
+	mavenCentral()
+	maven { url 'https://repo.spring.io/milestone' }
+	maven { url 'https://repo.spring.io/snapshot' }
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
+	compile "io.springfox:springfox-swagger2:2.9.2"
+	compile "io.springfox:springfox-swagger-ui:2.9.2"
+	compileOnly 'org.projectlombok:lombok:1.18.12'
+	annotationProcessor 'org.projectlombok:lombok:1.18.12'
+
+	testCompileOnly 'org.projectlombok:lombok:1.18.12'
+	testAnnotationProcessor 'org.projectlombok:lombok:1.18.12'
+	testCompile 'au.com.dius:pact-jvm-provider-junit5:4.0.0'
+	testImplementation 'com.atlassian.oai:swagger-request-validator-pact:2.9.0'
+//	implementation 'org.springdoc:springdoc-openapi:1.3'
+//	implementation 'org.springdoc:springdoc-openapi-ui:1.2'
+}
+
+test {
+	useJUnitPlatform()
+}
+
+pact {
+	serviceProviders {
+		PVRService {
+			protocol = 'http'
+			host = 'localhost'
+			port = 8080
+			path = '/'
+
+			hasPactsFromPactBroker("http://localhost:9292")
+		}
+	}
+
+}
